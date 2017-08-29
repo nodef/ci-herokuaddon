@@ -15,3 +15,6 @@ echo "-------"
 ls lib/heroku
 echo "-------"
 ln -s $PWD/lib/heroku/bin/heroku $PWD/heroku
+echo "-------"
+ls
+echo "-------"
