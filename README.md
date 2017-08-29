@@ -1,2 +1,3 @@
-# heroku-pg
-PostgreSQL Application Name Test.
+# ci-pg
+
+PostgreSQL Database Support for Continuous Integration.
