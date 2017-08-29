@@ -1,6 +1,6 @@
 {
   "name": "ci-pg",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "PostgreSQL Database Support for Continuous Integration.",
   "main": "index.js",
   "scripts": {
