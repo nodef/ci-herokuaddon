@@ -1,6 +1,6 @@
 {
   "name": "ci-pg",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "PostgreSQL Database Support for Continuous Integration.",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/wolfram77/web-cipg/issues"
   },
-  "homepage": "https://github.com/wolfram77/web-cipg#readme"
+  "homepage": "https://github.com/wolfram77/web-cipg#readme",
+  "dependencies": {
+    "heroku.js": "^0.12.2"
+  }
 }
