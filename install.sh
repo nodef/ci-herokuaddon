@@ -11,11 +11,11 @@ echo .:
 ls
 echo "-------"
 echo tmp:
-ls -d tmp
+ls -d tmp/*
 echo "-------"
-mv $(ls -d tmp) lib/heroku
+mv $(ls -d tmp/*) lib/heroku
 echo "-------"
-echo lib/heroku
+echo lib/heroku:
 ls lib/heroku
 echo "-------"
 echo lib/heroku/bin:
