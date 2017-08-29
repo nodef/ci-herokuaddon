@@ -1,10 +1,10 @@
 {
   "name": "ci-pg",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "PostgreSQL Database Support for Continuous Integration.",
   "main": "index.js",
   "scripts": {
-    "install": "wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh",
+    "install": "bash install.sh",
     "start": "node index",
     "test": "exit"
   },
