@@ -1,15 +1,12 @@
 var http = require('http');
-var Heroku = require('heroku.js');
+var cp = require('child_process');
 
-
-var api = new Heroku();
 var app = process.env.HEROKU_APP_NAME;
-
+cp.execSync('heroku --version');
+cp.execSync('heroku login', {
+  'input': `${HEROKU_EMAIL}\n${HEROKU_PASSWORD}\n`
+});
 http.createServer(function(req, res) {
-  api.addAddon(app, 'heroku-postgresql:hobby-dev', function(err, res) {
-    if(err) throw err;
-    console.log(res);
-  });
   res.writeHead(200, {
     'Content-Type': 'text/plain',
     'Transfer-Encoding': 'chunked',

@@ -1,9 +1,10 @@
 {
   "name": "ci-pg",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "PostgreSQL Database Support for Continuous Integration.",
   "main": "index.js",
   "scripts": {
+    "install": "npm install -g heroku-cli",
     "start": "node index",
     "test": "exit"
   },
