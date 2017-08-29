@@ -6,11 +6,11 @@ popd
 echo "-------"
 ls tmp
 echo "-------"
-ls tmp/heroku-cli-*
+ls
 echo "-------"
-ls tmp/heroku-cli-*
+ls tmp/*/
 echo "-------"
-mv $(ls tmp/heroku-cli-*) lib/heroku
+mv $(ls tmp/*/) lib/heroku
 echo "-------"
 ls lib/heroku
 echo "-------"
