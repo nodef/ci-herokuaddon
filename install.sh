@@ -10,7 +10,7 @@ popd
 chmod 777 heroku
 
 # login
-f="~/.netrc"
+f=".netrc"
 echo "" > ${f}
 echo "machine api.heroku.com" >> ${f}
 echo "  password ${HEROKU_PASSWORD}" >> ${f}
@@ -18,3 +18,4 @@ echo "  login ${HEROKU_EMAIL}" >> ${f}
 echo "machine git.heroku.com" >> ${f}
 echo "  password ${HEROKU_PASSWORD}" >> ${f}
 echo "  login ${HEROKU_EMAIL}" >> ${f}
+./heroku --version
