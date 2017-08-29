@@ -1,4 +1,4 @@
-mkdir tmp lib
+mkdir tmp tmp/zed lib
 pushd tmp
 wget ${HEROKU_CLI_URL} -O heroku.tar.gz
 tar -xvzf heroku.tar.gz
