@@ -2,8 +2,11 @@ var http = require('http');
 var cp = require('child_process');
 
 var app = process.env.HEROKU_APP_NAME;
-cp.execSync('./heroku --version');
+cp.execSync('./heroku --version', {
+  'cwd': __dirname
+});
 cp.execSync('./heroku login', {
+  'cwd': __dirname,
   'input': `${HEROKU_EMAIL}\n${HEROKU_PASSWORD}\n`
 });
 http.createServer(function(req, res) {
