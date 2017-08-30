@@ -55,10 +55,10 @@ var remove = function(id) {
 var supplyReset = function(key) {
   console.log(`pool.supplyReset(${key})`);
   return new Promise((fres, frej) => {
-    console.log(`pool.supplyReset:resetCredentials(${key})`);
+    console.log(`./heroku pg:credentials ${key} --reset --app ${app}`);
     cp.exec(`./heroku pg:credentials ${key} --reset --app ${app}`, (err) => {
       if(err) return frej(err);
-      console.log(`pool.supplyReset:resetItem(${key})`);
+      console.log(`./heroku pg:reset ${key} --app ${app}`);
       cp.exec(`./heroku pg:reset ${key} --app ${app}`, (err) => {
         if(err) return frej(err);
         supplySet().then((ans) => {
