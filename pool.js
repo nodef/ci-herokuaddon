@@ -9,6 +9,7 @@ var pending = new Map();
 var supplySetOne = function(cfg) {
   var w = cfg.split('=');
   if(w[0].search(/(DATABASE|POSTGRESQL)\S*URL/g)<0) return;
+  w[1] = w[1].substring(1, w[1].length-1);
   console.log(`- pool.supplySetOne(${w[0]}, ${w[1]})`);
   supply.set(w[0], w[1]);
   return w[0];
