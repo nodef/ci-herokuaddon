@@ -1,11 +1,16 @@
 var http = require('http');
 var express = require('express');
 var WebSocket = require('ws');
-var pool = require('./pool');
+var Pool = require('./pool');
 
 var app = process.env.HEROKU_APP;
 var port = process.env.PORT||80;
 var reqid = 0;
+
+var pool = Pool('pg', app, {
+  'name': 'heroku-postgresql:hobby-dev',
+  'config': /(HEROKU_POSTGRESQL|DATABASE)\S*URL/g
+});
 
 var x = express();
 x.use((req, res) => {
