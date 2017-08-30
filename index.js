@@ -5,7 +5,6 @@ var pool = require('./pool');
 
 var app = process.env.HEROKU_APP;
 var port = process.env.PORT||80;
-var server = http.createServer().listen(port);
 var reqid = 0;
 
 var x = express();
@@ -28,8 +27,6 @@ x.use((req, res) => {
 });
 
 var server = http.createServer(x);
-server.listen(port);
-
 var wss = new WebSocket.Server({server});
 wss.on('connection', (ws) => {
   var id = reqid++;
@@ -43,4 +40,6 @@ wss.on('connection', (ws) => {
   });
 });
 
-pool.setup(app);
+pool.setup(app).then((ans) => {
+  server.listen(port);
+});
