@@ -85,11 +85,13 @@ var add = function(id) {
   if(removed.has(id)) {
     var key = removed.get(id);
     removed.delete(id);
-    unused.push(key);
     console.log(`pool.add:deleteFromRemoved(${id}, ${key})`);
-    return supplyReset(key).then(() => id);
+    return supplyReset(key).then(() => {
+      unused.push(key);
+      pendingRemove();
+      return id;
+    });
   }
-  pendingRemove();
   return Promise.resolve(id);
 };
 
