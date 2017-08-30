@@ -30,7 +30,7 @@ var supplySet = function() {
 var setup = function(nam) {
   app = nam;
   console.log('pool.setup()');
-  supplySet().then((ans) => {
+  return supplySet().then((ans) => {
     for(var key of supply.keys())
       unused.push(key);
     return ans;

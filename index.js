@@ -15,6 +15,7 @@ var server = function() {
   }).listen(port);
 };
 
-pool.setup(app).then(() => {
+pool.setup(app).then((ans) => {
+  console.log(ans);
   server();
 });
