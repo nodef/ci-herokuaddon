@@ -28,7 +28,7 @@ x.use((req, res) => {
 });
 
 var server = http.createServer(x);
-var wss = new WebSocket({server});
+var wss = new WebSocket.Server({server});
 wss.on('connection', (ws) => {
   var id = reqid++;
   console.log(`server.wsconnect(${id})`);
