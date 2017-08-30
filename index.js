@@ -7,7 +7,7 @@ var server = http.createServer().listen(port);
 
 pool.setup(app).then((ans) => {
   server.on('request', (req, res) => {
-    var id = req.socket.fd;
+    var id = req.socket;
     console.log(`server.request(${id})`);
     res.writeHead(200, {
       'Content-Type': 'text/plain',
