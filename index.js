@@ -1,24 +1,20 @@
 var http = require('http');
-var cp = require('child_process');
+var pool = require('./pool');
 
 var app = process.env.HEROKU_APP_NAME;
-var pool = [];
+var port = process.env.PORT||80;
 
-function poolSetup(dst) {
-  var cfg = cp.execSync('./heroku config -s').toString();
-  for(var ln of cfg.match(/[^\r\n]+/g))
-    if(ln.indexOf('POSTGRESQL'))
+var server = function() {
+  http.createServer(function(req, res) {
+    res.writeHead(200, {
+      'Content-Type': 'text/plain',
+      'Transfer-Encoding': 'chunked',
+      'X-Content-Type-Options': 'nosniff'
+    });
+    res.write('Hello World!');
+  }).listen(port);
 };
 
-
-
-
-
-http.createServer(function(req, res) {
-  res.writeHead(200, {
-    'Content-Type': 'text/plain',
-    'Transfer-Encoding': 'chunked',
-    'X-Content-Type-Options': 'nosniff'
-  });
-  res.write('Hello World!');
-}).listen(process.env.PORT);
+pool.setup(app).then(() => {
+  server();
+});
