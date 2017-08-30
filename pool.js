@@ -92,7 +92,7 @@ var add = function(id) {
     removed.delete(id);
     unused.push(key);
     console.log(`pool.add:deleteFromRemoved(${id}, ${key})`);
-    return setupReset(key).then(() => id);
+    return supplyReset(key).then(() => id);
   }
   pendingRemove();
   return Promise.resolve(id);
@@ -100,7 +100,7 @@ var add = function(id) {
 
 var get = function(key) {
   var val = supply.get(key);
-  console.log(`pool.get(${key}) -> ${key}`);
+  console.log(`pool.get(${key}) -> ${val}`);
   return val;
 };
 
