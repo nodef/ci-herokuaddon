@@ -67,7 +67,7 @@ var supplyReset = function(key) {
 
 var pendingRemove = function() {
   if(!unused.length || !pending.size) return;
-  var id = pending.keys().next();
+  var id = pending.keys().next().value;
   var fres = pending.get(id);
   pending.delete(id);
   var key = unused.shift();
@@ -96,9 +96,7 @@ var add = function(id) {
 };
 
 var get = function(key) {
-  var val = supply.get(key);
-  console.log(`pool.get(${key})`);
-  return val;
+  return supply.get(key);
 };
 
 var $ = module.exports;
