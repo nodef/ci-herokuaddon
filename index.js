@@ -1,7 +1,7 @@
 var http = require('http');
 var pool = require('./pool');
 
-var app = process.env.HEROKU_APP_NAME;
+var app = process.env.HEROKU_APP;
 var port = process.env.PORT||80;
 var server = http.createServer().listen(port);
 
