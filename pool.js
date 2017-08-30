@@ -10,14 +10,13 @@ var supplySetOne = function(cfg) {
   var w = cfg.split('=');
   if(w[0].search(/(DATABASE|POSTGRESQL)\S*URL/g)<0) return;
   w[1] = w[1].substring(1, w[1].length-1);
-  console.log(`- pool.supplySetOne(${w[0]}, ${w[1]})`);
+  console.log(`- pool.supplySetOne(${w[0]})`);
   supply.set(w[0], w[1]);
   return w[0];
 };
 
 var supplySet = function() {
   return new Promise((fres, frej) => {
-    console.log('pool.supplySet()');
     cp.exec(`./heroku config -s --app ${app}`, (err, stdout) => {
       if(err) return frej(err);
       var cfgs = stdout.toString();
@@ -39,7 +38,6 @@ var setup = function(nam) {
 };
 
 var remove = function(id) {
-  console.log(`pool.remove(${id})`);
   return new Promise((fres) => {
     if(unused.length===0) {
       console.log(`pool.remove:addToPending(${id})`);
@@ -55,10 +53,8 @@ var remove = function(id) {
 var supplyReset = function(key) {
   console.log(`pool.supplyReset(${key})`);
   return new Promise((fres, frej) => {
-    console.log(`pool.supplyReset:resetCredentials(${key})`);
     cp.exec(`./heroku pg:credentials:rotate ${key} --app ${app} --confirm ${app}`, (err) => {
       if(err) return frej(err);
-      console.log(`pool.supplyReset:resetItem(${key})`);
       cp.exec(`./heroku pg:reset ${key} --app ${app} --confirm ${app}`, (err) => {
         if(err) return frej(err);
         supplySet().then((ans) => {
@@ -82,7 +78,6 @@ var pendingRemove = function() {
 };
 
 var add = function(id) {
-  console.log(`pool.add(${id})`);
   if(pending.has(id)) {
     console.log(`pool.add:deleteFromPending(${id})`);
     pending.delete(id);
@@ -100,7 +95,7 @@ var add = function(id) {
 
 var get = function(key) {
   var val = supply.get(key);
-  console.log(`pool.get(${key}) -> ${val}`);
+  console.log(`pool.get(${key})`);
   return val;
 };
 
