@@ -28,6 +28,8 @@ x.use((req, res) => {
 });
 
 var server = http.createServer(x);
+server.listen(port);
+
 var wss = new WebSocket.Server({server});
 wss.on('connection', (ws) => {
   var id = reqid++;
@@ -41,6 +43,4 @@ wss.on('connection', (ws) => {
   });
 });
 
-pool.setup(app).then((ans) => {
-  server.listen(port);
-});
+pool.setup(app);
