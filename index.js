@@ -15,13 +15,12 @@ pool.setup(app).then((ans) => {
       'X-Content-Type-Options': 'nosniff'
     });
     pool.remove(id).then((ans) => {
-      var val = pool.get(ans);
-      console.log(`server.request:poolRemove(${val})`);
-      res.write(val);
+      res.write(pool.get(ans));
     });
     var onend = function() {
       console.log(`server.request:end(${id})`);
       pool.add(id);
+      res.end();
     };
     req.on('aborted', onend);
     req.on('close', onend);
