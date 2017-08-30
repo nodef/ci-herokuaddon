@@ -22,7 +22,8 @@ pool.setup(app).then((ans) => {
       pool.add(id);
       res.end();
     };
-    req.on('aborted', onend);
-    req.on('close', onend);
+    // req.on('aborted', onend);
+    // req.on('close', onend);
+    res.on('close', onclose);
   });
 });
