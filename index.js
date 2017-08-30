@@ -1,4 +1,6 @@
 var http = require('http');
+var express = require('express');
+var WebSocket = require('ws');
 var pool = require('./pool');
 
 var app = process.env.HEROKU_APP;
@@ -6,25 +8,39 @@ var port = process.env.PORT||80;
 var server = http.createServer().listen(port);
 var reqid = 0;
 
-pool.setup(app).then((ans) => {
-  server.on('request', (req, res) => {
-    var id = reqid++;
-    console.log(`server.request(${id})`);
-    res.writeHead(200, {
-      'Content-Type': 'text/plain',
-      'Transfer-Encoding': 'chunked',
-      'X-Content-Type-Options': 'nosniff'
-    });
-    pool.remove(id).then((ans) => {
-      res.write(pool.get(ans));
-    });
-    var onend = function() {
-      console.log(`server.request:end(${id})`);
-      pool.add(id);
-      res.end();
-    };
-    // req.on('aborted', onend);
-    // req.on('close', onend);
-    res.on('close', onend);
+var x = express();
+x.use((req, res) => {
+  var id = reqid++;
+  console.log(`server.httpconnect(${id})`);
+  pool.remove(id).then((ans) => {
+    res.end(pool.get(ans));
   });
+  setTimeout(60000, () => {
+    if(id==null) return;
+    console.log(`server.supplytimeout(${id})`);
+    pool.add(id); id = null;
+  });
+  res.on('close', () => {
+    if(id==null) return;
+    console.log(`server.httpclose(${id})`);
+    pool.add(id); id = null;
+  });
+});
+
+var server = http.createServer(x);
+var wss = new WebSocket({server});
+wss.on('connection', (ws) => {
+  var id = reqid++;
+  console.log(`server.wsconnect(${id})`);
+  pool.remove(id).then((ans) => {
+    ws.send(pool.get(ans));
+  });
+  ws.on('close', () => {
+    console.log(`server.wsclose(${id})`);
+    pool.add(id);
+  });
+});
+
+pool.setup(app).then((ans) => {
+  server.listen(port);
 });
