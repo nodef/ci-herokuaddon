@@ -24,6 +24,6 @@ pool.setup(app).then((ans) => {
     };
     // req.on('aborted', onend);
     // req.on('close', onend);
-    res.on('close', onclose);
+    res.on('close', onend);
   });
 });
