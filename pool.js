@@ -20,7 +20,7 @@ var supplySet = function() {
     cp.exec(`./heroku config -s --app ${app}`, (err, stdout) => {
       if(err) return frej(err);
       var cfgs = stdout.toString();
-      for(var cfg of cgfs.match(/[^\r\n]+/g))
+      for(var cfg of cfgs.match(/[^\r\n]+/g))
         supplySetOne(cfg);
       fres(supply);
     });
