@@ -39,7 +39,7 @@ var setup = function(nam) {
 };
 
 var remove = function(id) {
-  console.resolve(`pool.remove(${id})`);
+  console.log(`pool.remove(${id})`);
   return new Promise((fres) => {
     if(unused.length===0) {
       console.log(`pool.remove:addToPending(${id})`);
