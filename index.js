@@ -30,14 +30,22 @@ var server = http.createServer(x);
 var wss = new WebSocket.Server({server});
 wss.on('connection', (ws) => {
   var id = reqid++;
+  ws.isAlive = true;
   console.log(`server.wsconnect(${id})`);
   pool.remove(id).then((ans) => {
     ws.send(pool.get(ans));
   });
   ws.on('close', () => {
     console.log(`server.wsclose(${id})`);
+    ws.isAlive = false;
     pool.add(id);
   });
+  var keepAlive = function() {
+    if(!ws.isAlive) return;
+    setTimeout(8000, keepAlive);
+    ws.ping();
+  };
+  setTimeout(8000, keepAlive);
 });
 
 pool.setup(app).then((ans) => {
