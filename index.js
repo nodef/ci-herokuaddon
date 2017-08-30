@@ -42,10 +42,10 @@ wss.on('connection', (ws) => {
   });
   var keepAlive = function() {
     if(!ws.isAlive) return;
-    setTimeout(8000, keepAlive);
+    setTimeout(keepAlive, 8000);
     ws.ping();
   };
-  setTimeout(8000, keepAlive);
+  setTimeout(keepAlive, 8000);
 });
 
 pool.setup(app).then((ans) => {
