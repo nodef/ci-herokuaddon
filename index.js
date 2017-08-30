@@ -2,9 +2,19 @@ var http = require('http');
 var cp = require('child_process');
 
 var app = process.env.HEROKU_APP_NAME;
-console.log(cp.execSync('./heroku --version').toString());
+var pool = [];
+
+function poolSetup(dst) {
+  var cfg = cp.execSync('./heroku config -s').toString();
+  for(var ln of cfg.match(/[^\r\n]+/g))
+    if(ln.indexOf('POSTGRESQL'))
+};
+
+
+
+
+
 http.createServer(function(req, res) {
-  console.log(cp.execSync('./heroku apps').toString());
   res.writeHead(200, {
     'Content-Type': 'text/plain',
     'Transfer-Encoding': 'chunked',
