@@ -1,3 +1,3 @@
-# ci-pg
+# ci-herokuaddon
 
-PostgreSQL Database Support for Continuous Integration.
+Heroku Addon Support for Continuous Integration.
