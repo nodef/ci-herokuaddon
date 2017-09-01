@@ -1,58 +1,83 @@
 var http = require('http');
 var express = require('express');
+var toboolean = require('to-boolean');
 var WebSocket = require('ws');
 var Pool = require('heroku-addonpool');
 
-var app = process.env.HEROKU_APP;
-var port = process.env.PORT||80;
-var reqid = 0;
+var $ = function(id, app, opt) {
+  var conn = 0;
+  var pool = Pool(`${id}@pool`, app, opt);
+  var opt = opt||{};
+  opt.timeout = opt.timeout||60000;
+  opt.ping = opt.ping||10000;
+  opt.log = opt.log||false;
 
-var pool = Pool('pg', app, {
-  'config': /(HEROKU_POSTGRESQL|DATABASE)\S*URL/g,
-  'log', true
-});
-
-var x = express();
-x.use((req, res) => {
-  var id = reqid++;
-  console.log(`server.httpconnect(${id})`);
-  pool.remove(id).then((ans) => {
-    res.end(pool.get(ans));
-  });
-  setTimeout(60000, () => {
-    if(id==null) return;
-    console.log(`server.supplytimeout(${id})`);
-    pool.add(id); id = null;
-  });
-  res.on('close', () => {
-    if(id==null) return;
-    console.log(`server.httpclose(${id})`);
-    pool.add(id); id = null;
-  });
-});
-
-var server = http.createServer(x);
-var wss = new WebSocket.Server({server});
-wss.on('connection', (ws) => {
-  var id = reqid++;
-  ws.isAlive = true;
-  console.log(`server.wsconnect(${id})`);
-  pool.remove(id).then((ans) => {
-    ws.send(pool.get(ans));
-  });
-  ws.on('close', () => {
-    console.log(`server.wsclose(${id})`);
-    ws.isAlive = false;
-    pool.add(id);
-  });
-  var keepAlive = function() {
-    if(!ws.isAlive) return;
-    setTimeout(keepAlive, 8000);
-    ws.ping();
+  var httplog = function(msg) {
+    if(opt.log) console.log(`${id}@http.${msg}`);
   };
-  setTimeout(keepAlive, 8000);
-});
 
-pool.setup(app).then((ans) => {
-  server.listen(port);
-});
+  var wslog = function(msg) {
+    if(opt.log) console.log(`${id}@ws.${msg}`);
+  };
+
+  var web = express();
+  web.use((req, res) => {
+    var c = conn++;
+    httplog(`connect(${c})`);
+    pool.remove(c).then((ans) => {
+      res.end(ans.value);
+    });
+    setTimeout(opt.timeout, () => {
+      if(c==null) return;
+      httplog(`timeout(${c})`);
+      pool.add(c); c = null;
+    });
+    res.on('close', () => {
+      if(c==null) return;
+      httplog(`close(${c})`);
+      pool.add(c); c = null;
+    });
+  });
+
+  var wss = new WebSocket.Server({'noServer': true});
+  var wssPong = () => this.isAlive = true;
+  var wssPing = () => {
+    for(var ws of wss.clients) {
+      if(!ws.isAlive) return ws.terminate();
+      ws.isAlive = false;
+      ws.ping('', false, true);
+    }
+  };
+  setInterval(wssPing, opt.ping);
+  wss.on('connection', (ws) => {
+    var c = conn++;
+    ws.isAlive = true;
+    ws.on('pong', wssPong);
+    wslog(`connect(${c})`);
+    pool.remove(c).then((ans) => {
+      ws.send(ans.value);
+    });
+    ws.on('close', () => {
+      wslog(`close(${c})`);
+      pool.add(c);
+    });
+  });
+
+  return {'http': web, 'ws': wss, 'pool': pool};
+};
+module.exports = $;
+
+if(require.main===module) {
+  var e = process.env;
+  var opt = {};
+  if(e.CI_TIMEOUT) opt.timeout = parseInt(e.CI_TIMEOUT);
+  if(e.CI_PING) opt.ping = parseInt(e.CI_PING);
+  if(e.CI_CONFIG) opt.config = new RegExp(e.CI_CONFIG, 'g');
+  if(e.CI_LOG) opt.log = toboolean(e.CI_LOG);
+  var app = $(e.CI_ID, e.CI_APP, opt);
+  var server = http.createServer(app.http);
+  server.on('upgrade', (req, soc, head) => {
+    app.ws.handleUpgrade(req, soc, head, (ws) => app.ws.emit('connection', ws));
+  });
+  app.pool.setup().then(() => server.listen(e.PORT||80));
+}
