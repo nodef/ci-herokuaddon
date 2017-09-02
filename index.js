@@ -27,11 +27,11 @@ var $ = function(id, app, opt) {
     pool.remove(c).then((ans) => {
       res.end(ans.value);
     });
-    setTimeout(opt.timeout, () => {
+    setTimeout(() => {
       if(c==null) return;
       httplog(`timeout(${c})`);
       pool.add(c); c = null;
-    });
+    }, opt.timeout);
     res.on('close', () => {
       if(c==null) return;
       httplog(`close(${c})`);
