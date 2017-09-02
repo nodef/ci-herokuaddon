@@ -1,6 +1,6 @@
 {
   "name": "ci-herokuaddon",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "Heroku Addon Support for Continuous Integration.",
   "main": "index.js",
   "scripts": {
