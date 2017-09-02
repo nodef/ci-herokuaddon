@@ -40,7 +40,6 @@ var $ = function(id, app, opt) {
   });
 
   var wss = new WebSocket.Server({'noServer': true});
-  var wssPong = () => this.isAlive = true;
   var wssPing = () => {
     for(var ws of wss.clients) {
       if(!ws.isAlive) return ws.terminate();
@@ -52,7 +51,7 @@ var $ = function(id, app, opt) {
   wss.on('connection', (ws) => {
     var c = conn++;
     ws.isAlive = true;
-    ws.on('pong', wssPong);
+    ws.on('pong', () => ws.isAlive = true);
     wslog(`connect(${c})`);
     pool.remove(c).then((ans) => {
       ws.send(ans.value);
