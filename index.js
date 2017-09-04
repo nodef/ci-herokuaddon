@@ -78,5 +78,6 @@ if(require.main===module) {
   server.on('upgrade', (req, soc, head) => {
     app.ws.handleUpgrade(req, soc, head, (ws) => app.ws.emit('connection', ws));
   });
-  app.pool.setup().then(() => server.listen(e.PORT||80));
+  server.listen(e.PORT||80);
+  app.pool.setup();
 }
