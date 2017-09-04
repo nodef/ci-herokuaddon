@@ -14,6 +14,10 @@ when you are done, you can simply disconnect, which will release the database
 back to the pool, where it is reset and login credentials are changed. Note:
 with HTTP however, there is a timeout after which you are automatically
 considered disconnected.
+
+Hosted PostgreSQL CI:
+https://ci-postgresql.herokuapp.com/
+wss://ci-postgresql.herokuapp.com/
 ```
 ```bash
 # NOTE:
