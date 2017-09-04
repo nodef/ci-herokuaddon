@@ -4,6 +4,23 @@
 
 Heroku Addon Support for Continuous Integration.
 
+```text
+I wanted to have a PostgreSQL server (connection string) for running tests
+in Travis CI (an automated testing and deploying system). SO, this is the
+result. You can connect to this server using HTTP or WebSocket. Once this
+app has a free database in its pool, it will return its connections string
+upon connection. You can use it any way you like to run your tests, and then
+when you are done, you can simply disconnect, which will release the database
+back to the pool, where it is reset and login credentials are changed. Note:
+with HTTP however, there is a timeout after which you are automatically
+considered disconnected.
+```
+```bash
+# NOTE:
+# The app with addons (pool app) must be different from the app
+# that uses the addons because heroku resets the pool app each
+# time a configuration variable is changed.
+```
 ```bash
 # set heroku cli login in environment variables
 HEROKU_CLI_LOGIN=youremail@domain.com
