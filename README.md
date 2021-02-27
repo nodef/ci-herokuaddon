@@ -1,7 +1,3 @@
-# ci-herokuaddon
-
-[![NPM](https://nodei.co/npm/ci-herokuaddon.png)](https://nodei.co/npm/ci-herokuaddon/)
-
 Heroku Addon Support for Continuous Integration.
 
 ```text
@@ -19,12 +15,17 @@ Hosted PostgreSQL CI:
 https://ci-postgresql.herokuapp.com/
 wss://ci-postgresql.herokuapp.com/
 ```
+
 ```bash
 # NOTE:
 # The app with addons (pool app) must be different from the app
 # that uses the addons because heroku resets the pool app each
 # time a configuration variable is changed.
 ```
+
+<br>
+<br>
+
 ```bash
 # set heroku cli login in environment variables
 HEROKU_CLI_LOGIN=youremail@domain.com
@@ -42,6 +43,9 @@ CI_TIMEOUT=httptimeoutinmilliseconds
 # also as of now you also need to purge cache before build
 heroku repo:purge_cache -a yourpoolapp
 ```
+
+<br>
+
 ```javascript
 // NOTE: this can also be used as a module
 var AddonPool = require('ci-addonpool');
