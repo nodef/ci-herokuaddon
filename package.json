@@ -28,6 +28,6 @@
     "heroku-addonpool": "^0.1.17",
     "to-boolean": "^1.0.0",
     "utf-8-validate": "^5.0.4",
-    "ws": "^7.4.3"
+    "ws": "^3.3.1"
   }
 }
