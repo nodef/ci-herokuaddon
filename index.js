@@ -1,8 +1,9 @@
-var http = require('http');
-var express   = require('express');
-var toboolean = require('to-boolean');
-var WebSocket = require('ws');
-var Pool      = require('heroku-addonpool');
+const http = require('http');
+const cp   = require('child_process');
+const express   = require('express');
+const toboolean = require('to-boolean');
+const WebSocket = require('ws');
+const Pool      = require('heroku-addonpool');
 
 const OPTIONS = {
   timeout: 60000,
@@ -14,6 +15,10 @@ const OPTIONS = {
 
 
 function ciHerokuAddon(id, app, o) {
+  console.log(`ciHerokuAddon`, {id, app, o});
+  cp.execSync('pwd', {stdio: [0, 1, 2]})
+  cp.execSync(`ls -al ~`, {stdio: [0, 1, 2]});
+
   var conn = 0;
   var pool = Pool(`${id}@pool`, app, o);
   var o = Object.assign({}, OPTIONS, o);
@@ -76,12 +81,13 @@ module.exports = ciHerokuAddon;
 
 
 function main() {
+  console.log(`main`);
   var E = process.env, o = {};
   if (E.CI_TIMEOUT) o.timeout = parseInt(E.CI_TIMEOUT);
   if (E.CI_PING)    o.ping    = parseInt(E.CI_PING);
   if (E.CI_CONFIG)  o.config  = new RegExp(E.CI_CONFIG, 'g');
   if (E.CI_LOG)     o.log     = toboolean(E.CI_LOG);
-  var app = $(E.CI_ID, E.CI_APP, o);
+  var app    = ciHerokuAddon(E.CI_ID, E.CI_APP, o);
   var server = http.createServer(app.http);
   server.on('upgrade', (req, soc, head) => {
     app.ws.handleUpgrade(req, soc, head, (ws) => app.ws.emit('connection', ws));

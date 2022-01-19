@@ -1,10 +1,10 @@
 {
   "name": "ci-herokuaddon",
-  "version": "0.1.7",
+  "version": "0.1.20",
   "description": "Heroku Addon Support for Continuous Integration.",
   "main": "index.js",
   "scripts": {
-    "start": "node ./",
+    "start": "node index.js",
     "test": "exit"
   },
   "repository": {
@@ -25,7 +25,7 @@
   "dependencies": {
     "bufferutil": "^4.0.3",
     "express": "^4.17.1",
-    "heroku-addonpool": "^0.1.20",
+    "heroku-addonpool": "^1.0.2",
     "to-boolean": "^1.0.0",
     "utf-8-validate": "^5.0.4",
     "ws": "^7.4.3"
