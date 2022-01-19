@@ -1,83 +1,91 @@
 var http = require('http');
-var express = require('express');
+var express   = require('express');
 var toboolean = require('to-boolean');
 var WebSocket = require('ws');
-var Pool = require('heroku-addonpool');
+var Pool      = require('heroku-addonpool');
 
-var $ = function(id, app, opt) {
+const OPTIONS = {
+  timeout: 60000,
+  ping:    10000,
+  log:     false
+};
+
+
+
+
+function ciHerokuAddon(id, app, o) {
   var conn = 0;
-  var pool = Pool(`${id}@pool`, app, opt);
-  var opt = opt||{};
-  opt.timeout = opt.timeout||60000;
-  opt.ping = opt.ping||10000;
-  opt.log = opt.log||false;
+  var pool = Pool(`${id}@pool`, app, o);
+  var o = Object.assign({}, OPTIONS, o);
 
-  var httplog = function(msg) {
-    if(opt.log) console.log(`${id}@http.${msg}`);
-  };
-
-  var wslog = function(msg) {
-    if(opt.log) console.log(`${id}@ws.${msg}`);
-  };
+  function httpLog(msg)  {
+    if(o.log) console.log(`${id}@http.${msg}`);
+  }
+  function wsLog(msg) {
+    if(o.log) console.log(`${id}@ws.${msg}`);
+  }
 
   var web = express();
   web.use((req, res) => {
     var c = conn++;
-    httplog(`connect(${c})`);
+    httpLog(`connect(${c})`);
     pool.remove(c).then((ans) => {
       res.end(ans.value);
     });
     setTimeout(() => {
-      if(c==null) return;
-      httplog(`timeout(${c})`);
+      if (c==null) return;
+      httpLog(`timeout(${c})`);
       pool.add(c); c = null;
-    }, opt.timeout);
+    }, o.timeout);
     res.on('close', () => {
-      if(c==null) return;
-      httplog(`close(${c})`);
+      if (c==null) return;
+      httpLog(`close(${c})`);
       pool.add(c); c = null;
     });
   });
 
-  var wss = new WebSocket.Server({'noServer': true});
-  var wssPing = () => {
+  var wss = new WebSocket.Server({noServer: true});
+  function wssPing() {
     for(var ws of wss.clients) {
       if(!ws.isAlive) return ws.terminate();
       ws.isAlive = false;
       ws.ping('', false, true);
     }
-  };
-  setInterval(wssPing, opt.ping);
+  }
+
+  setInterval(wssPing, o.ping);
   wss.on('connection', (ws) => {
     var c = conn++;
     ws.isAlive = true;
     ws.on('pong', () => ws.isAlive = true);
-    wslog(`connect(${c})`);
+    wsLog(`connect(${c})`);
     pool.remove(c).then((ans) => {
       ws.send(ans.value);
     });
     ws.on('close', () => {
-      wslog(`close(${c})`);
+      wsLog(`close(${c})`);
       pool.add(c);
     });
   });
 
   return {'http': web, 'ws': wss, 'pool': pool};
 };
-module.exports = $;
+module.exports = ciHerokuAddon;
 
-if(require.main===module) {
-  var e = process.env;
-  var opt = {};
-  if(e.CI_TIMEOUT) opt.timeout = parseInt(e.CI_TIMEOUT);
-  if(e.CI_PING) opt.ping = parseInt(e.CI_PING);
-  if(e.CI_CONFIG) opt.config = new RegExp(e.CI_CONFIG, 'g');
-  if(e.CI_LOG) opt.log = toboolean(e.CI_LOG);
-  var app = $(e.CI_ID, e.CI_APP, opt);
+
+
+
+function main() {
+  var E = process.env, o = {};
+  if (E.CI_TIMEOUT) o.timeout = parseInt(E.CI_TIMEOUT);
+  if (E.CI_PING)    o.ping    = parseInt(E.CI_PING);
+  if (E.CI_CONFIG)  o.config  = new RegExp(E.CI_CONFIG, 'g');
+  if (E.CI_LOG)     o.log     = toboolean(E.CI_LOG);
+  var app = $(E.CI_ID, E.CI_APP, o);
   var server = http.createServer(app.http);
   server.on('upgrade', (req, soc, head) => {
     app.ws.handleUpgrade(req, soc, head, (ws) => app.ws.emit('connection', ws));
-  });
-  server.listen(e.PORT||80);
+  }).listen(E.PORT||80);
   app.pool.setup();
 }
+if(require.main===module) main();
